@@ -45,9 +45,6 @@ jobs:
 #            ${{ hashFiles('ansible/molecule/default/molecule.yml') }}"
 #          restore-keys: ${{ runner.os }}-vagrant-
 
-      - name: Echo ps
-        run: ps -e -o pcpu,pmem,args -r
-
       - name: Measure performance
         id: measure-performance
         run: |
@@ -56,7 +53,7 @@ jobs:
               date &&
                 echo "%CPU %MEM ARGS" &&
                 ps -e -o pcpu,pmem,args -r |
-                cut --delimiter " " --fields 1-5 |
+                cut -d" " -f1-5 |
                   tail &&
                 printf "\n" \
             ) >>stats.log; \
