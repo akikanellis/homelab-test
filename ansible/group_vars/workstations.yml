@@ -1,0 +1,7 @@
+---
+aki_user_additional_home_directories:
+  - Courses
+  - Projects/aki
+  - Projects/forks
+  - Projects/other
+desktop_available: true

@@ -1,0 +1,8 @@
+---
+- name: Copy "aki" user ZSH configs
+  ansible.builtin.template:
+    src: users/aki/zsh/secret-env.zsh.j2
+    dest: /home/aki/.zsh/secret-env.zsh
+    owner: aki
+    group: aki
+    mode: 0600

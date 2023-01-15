@@ -1,0 +1,15 @@
+{{ ansible_managed | comment }}
+
+Host *
+    User aki
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_aki.pk
+
+Host server-nas
+  HostName server-nas.domantaki.com
+
+Host server-pi
+  HostName server-pi.domantaki.com
+
+Host workstation-pop-os
+  HostName workstation-pop-os.domantaki.com

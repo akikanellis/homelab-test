@@ -1,0 +1,46 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    role-file: requirements.yml
+
+driver:
+  name: vagrant
+  default_box: ubuntu/jammy64
+
+platforms:
+  - name: workstation-pop-os
+    groups: [workstations]
+    # `cpus` need to roughly match the core count used by the CI. Currently, we
+    # are using a 3-core macos-12 instance in '.github/workflows/test.yml',
+    # therefore we are using 2x 2-core instances with vagrant.
+    # See:
+    # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
+    cpus: 2
+    memory: 2048
+
+  - name: server-nas
+    groups: [servers]
+    # See note on `cpus` above
+    cpus: 2
+    memory: 2048
+
+  - name: server-pi
+    groups: [servers]
+    # See note on `cpus` above
+    cpus: 2
+    memory: 2048
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      vault_password_file: |
+        ${MOLECULE_SCENARIO_DIRECTORY}/../../vault-password-dev.txt
+  inventory:
+    links:
+      group_vars: ../../inventories/dev/group_vars/
+
+verifier:
+  name: ansible

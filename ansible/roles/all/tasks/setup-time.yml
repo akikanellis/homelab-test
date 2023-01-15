@@ -1,0 +1,18 @@
+---
+- name: Install chrony
+  ansible.builtin.package:
+    name: chrony
+
+- name: Start chrony
+  ansible.builtin.service:
+    name: chrony
+    state: started
+    enabled: true
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+  notify: Restart chrony
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

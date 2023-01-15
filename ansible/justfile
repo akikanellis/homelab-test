@@ -1,0 +1,64 @@
+#!/usr/bin/env just --justfile
+
+export PY_COLORS := "1"
+export ANSIBLE_FORCE_COLOR := "1"
+
+@_default:
+  just --list
+
+# Install project dependencies
+install:
+  #!/usr/bin/env bash
+  python -m venv env
+  source env/bin/activate
+  pip install -r requirements.txt
+  ansible-galaxy install -r requirements.yml
+
+# Run the tests
+test *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule {{extra_args}} test
+
+# Create the app
+up *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule {{extra_args}} create
+
+# Run the app
+run *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule {{extra_args}} converge
+
+# Run the app for testing
+run-test *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule {{extra_args}} converge -- --tags test -vv
+
+# Run the app for testing with debugging on
+run-test-debug *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule {{extra_args}} converge -- --tags test -vvv
+
+# Run the app for debugging
+run-debug *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule --debug {{extra_args}} converge -- -vvv
+
+# Tear down the app
+down *extra_args:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule {{extra_args}} destroy
+
+# Clean generated files
+clean:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule destroy
+  rm -rf env galaxy

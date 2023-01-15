@@ -1,0 +1,199 @@
+---
+- name: Install vagrant
+  ansible.builtin.package:
+    name: vagrant
+
+- name: Install "aki" user asdf dev tools
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: asdf
+  vars:
+    asdf_plugins:
+      - name: java
+        version: latest:temurin-18
+
+      - name: kotlin
+      - name: groovy
+      - name: gradle
+      - name: maven
+      - name: awscli
+
+- name: Install GitHub CLI
+  ansible.builtin.apt:
+    deb:
+      "https://github.com/cli/cli/releases/download/\
+      {{ github_cli_version }}/\
+      gh_\
+      {{ github_cli_version | regex_replace('v(.+)', '\\1') }}_\
+      {{ ansible_system | lower }}_{{ github_cli_architecture }}.deb"
+  register: result
+  retries: 10
+  delay: 2
+  until: result is success
+
+- name: Install Terraform
+  block:
+    - name: Add HashiCorp apt key
+      ansible.builtin.apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+      register: result
+      retries: 10
+      delay: 2
+      until: result is success
+
+    - name: Add HashiCorp apt repository
+      ansible.builtin.apt_repository:
+        repo: >
+          deb
+          https://apt.releases.hashicorp.com
+          {{ ansible_distribution_release }}
+          main
+
+    - name: Install Terraform
+      ansible.builtin.package:
+        name: terraform
+
+- name: Install python dev tools
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: pip
+  vars:
+    package_names:
+      - ansible
+      - molecule
+      - yamllint
+
+- name: Install "aki" user Postman
+  become_user: aki
+  community.general.flatpak:
+    method: user
+    name: com.getpostman.Postman
+
+- name: Install mqtt-explorer
+  community.general.snap:
+    name: mqtt-explorer
+
+- name: Install just
+  community.general.snap:
+    name: just
+    channel: edge
+    classic: true
+
+- name: Install Visual Studio Code and IntelliJ
+  community.general.snap:
+    classic: true
+    name:
+      - code
+      - intellij-idea-ultimate
+
+- name: Install VirtualBox
+  block:
+    - name: Add VirtualBox apt key
+      ansible.builtin.apt_key:
+        url: https://www.virtualbox.org/download/oracle_vbox_2016.asc
+      register: result
+      retries: 10
+      delay: 2
+      until: result is success
+
+    - name: Add VirtualBox apt repository
+      ansible.builtin.apt_repository:
+        repo:
+          "deb \
+          https://download.virtualbox.org/virtualbox/\
+          {{ ansible_os_family | lower }} \
+          {{ ansible_distribution_release }} \
+          contrib"
+
+    - name: Accept VirtualBox license
+      ansible.builtin.debconf:
+        name: virtualbox-ext-pack
+        question: virtualbox-ext-pack/license
+        value: "true"
+        vtype: select
+
+    # VirtualBox needs to be installed before the extensions otherwise the
+    # package dependencies will conflict
+    - name: Install VirtualBox
+      ansible.builtin.package:
+        name: virtualbox
+      # VirtualBox can't be installed if already running
+      register: package_virtualbox_result
+      failed_when: >
+        package_virtualbox_result.failed and
+        'VirtualBox is currently running' not in package_virtualbox_result.msg
+
+    - name: Install VirtualBox extensions
+      ansible.builtin.package:
+        name:
+          - virtualbox-ext-pack
+          - virtualbox-guest-utils
+
+- name: Install Wireshark
+  block:
+    - name: Install Wireshark
+      ansible.builtin.package:
+        name: wireshark
+
+    - name: Allow non-root users to capture packets with Wireshark
+      ansible.builtin.debconf:
+        name: wireshark-common
+        question: wireshark-common/install-setuid
+        value: "true"
+        vtype: boolean
+
+    - name: Reconfigure Wireshark
+      ansible.builtin.command: >
+        dpkg-reconfigure -f noninteractive wireshark-common
+      changed_when: false
+
+    - name: Add "aki" user to "wireshark" group
+      ansible.builtin.user:
+        name: aki
+        groups: wireshark
+        append: true
+
+- name: Install Tilix
+  block:
+    - name: Install Tilix
+      ansible.builtin.package:
+        name: tilix
+
+    - name: Create "aki" user Tilix config directory
+      ansible.builtin.file:
+        path: /home/aki/.config/tilix/schemes
+        state: directory
+        owner: aki
+        group: aki
+        mode: 0700
+
+    - name: Create "aki" user Tilix default profile
+      become_user: aki
+      community.general.dconf:
+        key:
+          "/com/gexperts/Tilix/profiles/2b7c4080-0ddd-46c5-8f23-563fd3ba789d/\
+          {{ item.key }}"
+        value: "{{ item.value }}"
+      loop:
+        - {key: font, value: "'Hack Nerd Font Mono 11'"}
+        - {key: use-system-font, value: "false"}
+        - {key: visible-name, value: "'Default'"}
+
+    - name: Set "aki" user Tilix default profile
+      become_user: aki
+      community.general.dconf:
+        key: /com/gexperts/Tilix/profiles/default
+        value: "'2b7c4080-0ddd-46c5-8f23-563fd3ba789d'"
+
+    - name: Add "aki" user Tilix One Dark theme
+      ansible.builtin.get_url:
+        # See: https://github.com/storm119/Tilix-Themes/blob/master/Themes.md
+        url: https://git.io/v7Qaw
+        dest: /home/aki/.config/tilix/schemes/one-dark.json
+        owner: aki
+        group: aki
+        mode: 0600
+      register: result
+      retries: 10
+      delay: 2
+      until: result is success

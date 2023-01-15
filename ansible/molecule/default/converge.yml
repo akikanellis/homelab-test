@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+
+  tasks: []
+
+- name: Apply Configuration
+  import_playbook: ../../apply-configuration.yml

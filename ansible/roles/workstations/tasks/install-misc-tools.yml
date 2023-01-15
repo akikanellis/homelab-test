@@ -1,0 +1,65 @@
+---
+- name: Install misc tools
+  ansible.builtin.package:
+    name:
+      - caffeine
+      - gnome-tweaks
+
+- name: Install "aki" user Flatpak misc tools
+  become_user: aki
+  community.general.flatpak:
+    method: user
+    name:
+      - com.slack.Slack
+      - com.system76.Popsicle
+      - com.uploadedlobster.peek
+      - org.audacityteam.Audacity
+      - org.flameshot.Flameshot
+      - org.gimp.GIMP
+      - org.kde.kdenlive
+      - org.libreoffice.LibreOffice
+      - org.mozilla.firefox
+      - org.signal.Signal
+      - org.videolan.VLC
+
+- name: Install Google Chrome
+  block:
+    - name: Add Google apt key
+      ansible.builtin.apt_key:
+        url:
+          "https://dl.google.com/\
+          {{ ansible_system | lower }}/\
+          {{ ansible_system | lower }}_signing_key.pub"
+      register: result
+      retries: 10
+      delay: 2
+      until: result is success
+
+    - name: Install Google Chrome apt repository
+      ansible.builtin.apt_repository:
+        repo: >
+          deb [arch={{ google_chrome_architecture }}]
+          http://dl.google.com/{{ ansible_system | lower }}/chrome/deb/
+          stable
+          main
+
+    - name: Install Google Chrome
+      ansible.builtin.package:
+        name: google-chrome-stable
+
+- name: Install "aki" user fonts
+  ansible.builtin.unarchive:
+    remote_src: true
+    src:
+      "https://github.com/ryanoasis/nerd-fonts/releases/download/\
+      {{ nerd_fonts_version }}/\
+      Hack.zip"
+    dest: /home/aki/.local/share/fonts
+    include: "*.ttf"
+    owner: aki
+    group: aki
+    mode: 0600
+  register: result
+  retries: 10
+  delay: 2
+  until: result is success

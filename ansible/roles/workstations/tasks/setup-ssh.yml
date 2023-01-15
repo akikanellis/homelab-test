@@ -1,0 +1,23 @@
+---
+- name: Install SSH password prompt for Gnome
+  ansible.builtin.package:
+    name: ssh-askpass-gnome
+
+- name: Copy "aki" user ssh keys
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: /home/aki/.ssh/{{ item.dest }}
+    owner: aki
+    group: aki
+    mode: 0600
+  loop:
+    - {src: "{{ aki_ssh_private_key_file }}", dest: id_ed25519_aki.pk}
+    - {src: "{{ aki_ssh_public_key_file }}", dest: id_ed25519_aki.pub}
+
+- name: Copy "aki" user ssh client config
+  ansible.builtin.template:
+    src: users/aki/ssh/config.j2
+    dest: /home/aki/.ssh/config
+    owner: aki
+    group: aki
+    mode: 0600
