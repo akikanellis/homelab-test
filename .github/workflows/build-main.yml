@@ -56,7 +56,7 @@ jobs:
                 cut -d" " -f1-5 |
                   tail &&
                 printf "\n" \
-            ) >>stats.log; \
+            ); \
             sleep 1; \
           done &
           
