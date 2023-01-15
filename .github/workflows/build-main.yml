@@ -46,7 +46,7 @@ jobs:
 #          restore-keys: ${{ runner.os }}-vagrant-
 
       - name: Debug ps
-        run: ps -e -o pcpu,pmem,args -r
+        run: ps -e -o pcpu,pmem,args -r | cut -d" " -f1-5
 
 #      - name: Measure performance
 #        id: measure-performance
