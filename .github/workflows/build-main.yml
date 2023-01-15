@@ -45,6 +45,9 @@ jobs:
             ${{ hashFiles('ansible/molecule/default/molecule.yml') }}"
           restore-keys: ${{ runner.os }}-vagrant-
 
+      - name: Echo ps
+        run: ps -e --format pcpu,pmem,args --sort=pcpu
+
       - name: Measure performance
         id: measure-performance
         run: |
