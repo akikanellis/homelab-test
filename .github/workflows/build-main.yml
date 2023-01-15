@@ -46,7 +46,7 @@ jobs:
 #          restore-keys: ${{ runner.os }}-vagrant-
 
       - name: Echo ps
-        run: ps -e -o pcpu,pmem,args --sort=pcpu
+        run: ps -e -o pcpu,pmem,args -r
 
       - name: Measure performance
         id: measure-performance
@@ -55,7 +55,7 @@ jobs:
             (
               date &&
                 echo "%CPU %MEM ARGS" &&
-                ps -e --format pcpu,pmem,args --sort=pcpu |
+                ps -e -o pcpu,pmem,args -r |
                 cut --delimiter " " --fields 1-5 |
                   tail &&
                 printf "\n" \
