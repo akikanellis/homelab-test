@@ -45,33 +45,30 @@ jobs:
 #            ${{ hashFiles('ansible/molecule/default/molecule.yml') }}"
 #          restore-keys: ${{ runner.os }}-vagrant-
 
-      - name: Debug ps
-        run: ps -e -o pcpu,pmem,args -r | cut -d" " -f1-10
+      - name: Measure performance
+        id: measure-performance
+        run: |
+          while true; do \
+            (
+              date &&
+                echo "%CPU %MEM ARGS" &&
+                ps -e -o pcpu,pmem,args -r |
+                cut -d" " -f1-10 |
+                  tail &&
+                printf "\n" \
+            ); \
+            sleep 1; \
+          done &
 
-#      - name: Measure performance
-#        id: measure-performance
-#        run: |
-#          while true; do \
-#            (
-#              date &&
-#                echo "%CPU %MEM ARGS" &&
-#                ps -e -o pcpu,pmem,args -r |
-#                cut -d" " -f1-10 |
-#                  tail &&
-#                printf "\n" \
-#            ); \
-#            sleep 1; \
-#          done &
-#
-#          echo "stats_pid=$!" >> $GITHUB_OUTPUT
-#
-#      - name: Stop measuring performance
-#        run: kill ${{ steps.measure-performance.outputs.stats_pid }}
-#
-#      - uses: actions/upload-artifact@v3
-#        with:
-#          name: stats.log
-#          path: stats.log
+          echo "stats_pid=$!" >> $GITHUB_OUTPUT
+
+      - name: Stop measuring performance
+        run: kill ${{ steps.measure-performance.outputs.stats_pid }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: stats.log
+          path: stats.log
 
 #      - name: Test
 #        run: just test
