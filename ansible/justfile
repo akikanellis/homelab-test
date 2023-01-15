@@ -18,7 +18,7 @@ install:
 test *extra_args:
   #!/usr/bin/env bash
   source env/bin/activate
-  molecule {{extra_args}} test
+  molecule {{extra_args}} test -- --tags test -vv
 
 # Create the app
 up *extra_args:
