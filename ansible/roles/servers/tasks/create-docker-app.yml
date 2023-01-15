@@ -18,12 +18,15 @@
       up
       --detach
       --remove-orphans
+  async: 300
+  poll: 0
   register: docker_compose_up_result
-  changed_when: >
-    'Creating' in docker_compose_up_result.stderr or
-    'Recreating' in docker_compose_up_result.stderr or
-    'Starting' in docker_compose_up_result.stderr or
-    'Stopping' in docker_compose_up_result.stderr
+#  register: docker_compose_up_result
+#  changed_when: >
+#    'Creating' in docker_compose_up_result.stderr or
+#    'Recreating' in docker_compose_up_result.stderr or
+#    'Starting' in docker_compose_up_result.stderr or
+#    'Stopping' in docker_compose_up_result.stderr
 
 - name: Finished running for app "{{ item }}"
   ansible.builtin.debug:
