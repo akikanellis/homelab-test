@@ -38,6 +38,7 @@ provisioner:
     defaults:
       vault_password_file: |
         ${MOLECULE_SCENARIO_DIRECTORY}/../../vault-password-dev.txt
+      callbacks_enabled: ansible.posix.profile_tasks
   inventory:
     links:
       group_vars: ../../inventories/dev/group_vars/
