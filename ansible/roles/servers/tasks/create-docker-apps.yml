@@ -96,8 +96,8 @@
       up
       --detach
       --remove-orphans
-#  async: 1200
-#  poll: 0
+  async: 1200
+  poll: 0
   register: docker_compose_up_result
   loop: "{{ apps }}"
 #  register: docker_compose_up_result
@@ -111,11 +111,11 @@
 #  ansible.builtin.debug:
 #    var: docker_compose_up_result
 #
-#- name: Wait for docker apps
-#  ansible.builtin.async_status:
-#    jid: "{{ item.ansible_job_id }}"
-#  register: job_result
-#  until: job_result.finished
-#  retries: 2400
-#  delay: 1
-#  loop: "{{ docker_compose_up_result.results }}"
+- name: Wait for docker apps
+  ansible.builtin.async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 2400
+  delay: 1
+  loop: "{{ docker_compose_up_result.results }}"
