@@ -23,7 +23,7 @@ platforms:
   - name: server-nas
     groups: [servers]
     # See note on `cpus` above
-    cpus: 4
+    cpus: 6
     memory: 4096
 
   - name: server-pi
