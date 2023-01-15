@@ -1,4 +1,8 @@
 ---
+- name: Going to run for app "{{ item }}"
+  ansible.builtin.debug:
+    msg: Going to run for app "{{ item }}"
+
 - name: Create and start app containers for app "{{ item }}"
   # `docker compose up` has a bug where if this is the first time an image is
   # pulled, running `docker compose up` again will cause the containers to be
@@ -20,3 +24,7 @@
     'Recreating' in docker_compose_up_result.stderr or
     'Starting' in docker_compose_up_result.stderr or
     'Stopping' in docker_compose_up_result.stderr
+
+- name: Finished running for app "{{ item }}"
+  ansible.builtin.debug:
+    msg: Finished running for app "{{ item }}"

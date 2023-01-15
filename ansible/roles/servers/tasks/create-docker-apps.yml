@@ -1,20 +1,14 @@
 ---
-#- name: Set apps
-#  ansible.builtin.set_fact:
-#    apps: >
-#      {{
-#      lookup("community.general.filetree",
-#      "templates/{{ inventory_hostname }}/docker/apps")
-#      | selectattr("state", "equalto", "directory")
-#      | rejectattr("path", "contains", "/")
-#      | map(attribute="path")
-#      }}
-
 - name: Set apps
   ansible.builtin.set_fact:
-    apps:
-      - portainer
-      - monitoring
+    apps: >
+      {{
+      lookup("community.general.filetree",
+      "templates/{{ inventory_hostname }}/docker/apps")
+      | selectattr("state", "equalto", "directory")
+      | rejectattr("path", "contains", "/")
+      | map(attribute="path")
+      }}
 
 - name: Create docker app directory
   ansible.builtin.file:
