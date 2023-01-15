@@ -54,7 +54,7 @@ jobs:
                 echo "%CPU %MEM ARGS" &&
                 ps -e -o pcpu,pmem,args -r |
                 cut -d" " -f1-10 |
-                  tail &&
+                  head -n 5 &&
                 printf "\n" \
             ) >>stats.log; \
             sleep 1; \
