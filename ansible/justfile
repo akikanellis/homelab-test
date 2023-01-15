@@ -18,6 +18,7 @@ install:
 test *extra_args:
   #!/usr/bin/env bash
   source env/bin/activate
+  ANSIBLE_CALLBACK_WHITELIST=ansible.posix.profile_tasks
   molecule {{extra_args}} test -- --tags test -vv
 
 # Create the app
