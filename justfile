@@ -8,6 +8,9 @@ install:
 test:
   just ansible/test
 
+test-host host:
+  just ansible/test-host {{host}}
+
 # Run the app
 run:
   just ansible/run

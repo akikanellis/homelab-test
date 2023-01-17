@@ -20,6 +20,11 @@ test *extra_args:
   source env/bin/activate
   molecule {{extra_args}} test
 
+test-host host:
+  #!/usr/bin/env bash
+  source env/bin/activate
+  molecule test -- --limit={{host}}
+
 # Create the app
 up *extra_args:
   #!/usr/bin/env bash

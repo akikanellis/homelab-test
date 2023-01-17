@@ -9,6 +9,12 @@ jobs:
   test:
     name: Test
     runs-on: macos-12
+    strategy:
+      matrix:
+        host:
+          - workstation-pop-os
+          - server-nas
+          - server-pi
 
     steps:
       - name: Checkout
@@ -62,12 +68,12 @@ jobs:
           echo "stats_pid=$!" >> $GITHUB_OUTPUT
 
       - name: Test
-        run: just test
+        run: just test-host ${{ matrix.host }}
 
       - name: Stop measuring performance
         run: kill ${{ steps.measure-performance.outputs.stats_pid }}
 
       - uses: actions/upload-artifact@v3
         with:
-          name: stats.log
+          name: ${{ matrix.host }}-stats.log
           path: stats.log
