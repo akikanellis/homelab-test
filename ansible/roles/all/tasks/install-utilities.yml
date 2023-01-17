@@ -114,7 +114,6 @@
 - name: Install Docker
   block:
     - name: Add Docker apt key
-      tags: test
       ansible.builtin.apt_key:
         url:
           "https://download.docker.com/\
@@ -127,7 +126,6 @@
       until: result is success
 
     - name: Add Docker apt repository
-      tags: test
       ansible.builtin.apt_repository:
         repo:
           "deb [arch={{ docker_architecture }}] \
@@ -138,7 +136,6 @@
           stable"
 
     - name: Install Docker Engine
-      tags: test
       ansible.builtin.package:
         name:
           - containerd.io
@@ -147,7 +144,6 @@
           - docker-compose-plugin
 
     - name: Create "docker" group
-      tags: test
       ansible.builtin.group:
         name: docker
 
@@ -158,7 +154,6 @@
         append: true
 
     - name: Add ansible user to "docker" group
-      tags: test
       ansible.builtin.user:
         name: "{{ ansible_admin_user_name }}"
         groups: docker

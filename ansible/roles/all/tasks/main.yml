@@ -1,6 +1,5 @@
 ---
 - name: Setup ansible
-  tags: test
   ansible.builtin.import_tasks: setup-ansible.yml
 
 - name: Create aki user
@@ -10,7 +9,6 @@
   ansible.builtin.import_tasks: install-package-managers.yml
 
 - name: Setup time
-  tags: test
   ansible.builtin.import_tasks: setup-time.yml
 
 - name: Remove preinstalled packages

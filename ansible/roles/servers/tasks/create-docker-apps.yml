@@ -81,7 +81,7 @@
     access_time: preserve
   loop: "{{ docker_prerequisite_service_files }}"
 
-- name: Create and start apps
+- name: Create and start app containers
   # `docker compose up` has a bug where if this is the first time an image is
   # pulled, running `docker compose up` again will cause the containers to be
   # recreated.
@@ -96,26 +96,10 @@
       up
       --detach
       --remove-orphans
-  async: 1200
-  poll: 0
-  register: docker_compose_up_result
   loop: "{{ apps }}"
-#  register: docker_compose_up_result
-#  changed_when: >
-#    'Creating' in docker_compose_up_result.stderr or
-#    'Recreating' in docker_compose_up_result.stderr or
-#    'Starting' in docker_compose_up_result.stderr or
-#    'Stopping' in docker_compose_up_result.stderr
-
-#- name: docker_compose_up_result
-#  ansible.builtin.debug:
-#    var: docker_compose_up_result
-#
-- name: Wait for docker apps
-  ansible.builtin.async_status:
-    jid: "{{ item.ansible_job_id }}"
-  register: job_result
-  until: job_result.finished
-  retries: 2400
-  delay: 1
-  loop: "{{ docker_compose_up_result.results }}"
+  register: docker_compose_up_result
+  changed_when: >
+    'Creating' in docker_compose_up_result.stderr or
+    'Recreating' in docker_compose_up_result.stderr or
+    'Starting' in docker_compose_up_result.stderr or
+    'Stopping' in docker_compose_up_result.stderr

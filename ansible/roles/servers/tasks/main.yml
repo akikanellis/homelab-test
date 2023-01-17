@@ -1,8 +1,6 @@
 ---
 - name: Set facts
-  tags: test
   ansible.builtin.import_tasks: set-facts.yml
 
 - name: Create Docker apps
-  tags: test
   ansible.builtin.import_tasks: create-docker-apps.yml
