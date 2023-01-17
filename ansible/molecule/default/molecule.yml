@@ -17,13 +17,13 @@ platforms:
     # therefore we are using 2x 2-core instances with vagrant.
     # See:
     # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources
-    cpus: 2
+    cpus: 3
     memory: 2048
 
   - name: server-nas
     groups: [servers]
     # See note on `cpus` above
-    cpus: 2
+    cpus: 3
     # server-nas needs extra memory primarily due to the amount of docker apps
     # that are running
     memory: 4096
@@ -31,7 +31,7 @@ platforms:
   - name: server-pi
     groups: [servers]
     # See note on `cpus` above
-    cpus: 2
+    cpus: 3
     memory: 2048
 
 provisioner:
